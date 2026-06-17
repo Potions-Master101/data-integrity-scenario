@@ -12,7 +12,7 @@ def clean_supplier_data(file_path: str, output_path: str):
 
     # Use UTF-8 encoding to prevent character corruption
     df = pd.read_csv(file_path, encoding="utf-8")
-    print(f"✅ Initial Load: {len(df)} rows found.")
+    print(f"Initial Load: {len(df)} rows found.")
 
     # 2. STRIP WHITESPACE & STANDARDIZE COLUMN NAMES
     # Remove leading/trailing spaces from column headers and lower/snake_case them
@@ -24,7 +24,7 @@ def clean_supplier_data(file_path: str, output_path: str):
     required_cols = ["sku", "product_name", "price", "quantity"]
     missing_cols = [col for col in required_cols if col not in df.columns]
     if missing_cols:
-        raise ValueError(f"🚨 Missing critical columns in CSV: {missing_cols}")
+        raise ValueError(f"Missing critical columns in CSV: {missing_cols}")
 
     # Strip whitespace from all text columns to clean up formatting
     text_cols = df.select_dtypes(include=["object"]).columns
@@ -35,12 +35,12 @@ def clean_supplier_data(file_path: str, output_path: str):
     # Drop rows where critical identifiers are missing
     initial_count = len(df)
     df = df.dropna(subset=["sku", "product_name"])
-    print(f"🧹 Dropped {initial_count - len(df)} rows due to missing SKU or Product Name.")
+    print(f"Dropped {initial_count - len(df)} rows due to missing SKU or Product Name.")
 
     # Remove duplicate SKUs (keep the first occurrence)
     pre_dup_count = len(df)
     df = df.drop_duplicates(subset=["sku"], keep="first")
-    print(f"🧹 Removed {pre_dup_count - len(df)} duplicate SKU rows.")
+    print(f"Removed {pre_dup_count - len(df)} duplicate SKU rows.")
 
     # 4. VALUE CLEANING & STANDARDIZATION
     # Clean pricing: Remove currency symbols, commas, and force float data type
@@ -54,7 +54,7 @@ def clean_supplier_data(file_path: str, output_path: str):
     # Flag or remove negative values
     invalid_prices = df[df["price"] < 0]
     if not invalid_prices.empty:
-        print(f"⚠️ Warning: Found {len(invalid_prices)} items with negative prices. Setting to 0.00.")
+        print(f"Warning: Found {len(invalid_prices)} items with negative prices. Setting to 0.00.")
         df.loc[df["price"] < 0, "price"] = 0.00
 
     invalid_qty = df[df["quantity"] < 0]
@@ -72,7 +72,7 @@ def clean_supplier_data(file_path: str, output_path: str):
 
     # 7. EXPORT CLEANED FILE
     df.to_csv(output_path, index=False, encoding="utf-8")
-    print(f"\n🎉 Success! Cleaned file saved with {len(df)} rows to: {output_path}")
+    print(f"\nSuccess! Cleaned file saved with {len(df)} rows to: {output_path}")
 
 
 # --- RUN SCRIPT ---
@@ -84,4 +84,4 @@ if __name__ == "__main__":
     try:
         clean_supplier_data(INPUT_CSV, OUTPUT_CSV)
     except Exception as e:
-        print(f"❌ Script Failed: {e}")
+        print(f"Script Failed: {e}")
